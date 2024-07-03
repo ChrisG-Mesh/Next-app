@@ -1,5 +1,5 @@
 import Cors from 'cors';
-import initMiddleware from '../../lib/init-middleware';
+import initMiddleware from '../../../lib/init-middleware';
 
 // middleware necessary otherwise would run into CORS issues when communicating with google ext
 const cors = initMiddleware(
