@@ -1,0 +1,96 @@
+import React, { useState, useEffect } from 'react';
+import { createLink } from '@meshconnect/web-link-sdk';
+
+const MeshPopup = () => {
+  const [linkConnection, setLinkConnection] = useState(null);
+  const [linkToken, setLinkToken] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetchLinkToken();
+  }, []);
+
+  useEffect(() => {
+    if (linkToken) {
+      const link = createLink({
+        clientId: "b7007f87-c050-40cf-7777-08dc6f959a47", //hard coded temporarily
+        onIntegrationConnected: (data) => {
+          console.log('Integration connected:', data);
+        },
+        onEvent: (event) => {
+          console.info('Mesh EVENT', event);
+          if (event.type === 'close') {
+            console.log('Close event occurred in Mesh modal');
+            window.close();
+          }
+        },
+        onExit: (error) => {
+          if (error) {
+            console.error('Link exited with error:', error);
+          } else {
+            console.log('Link exited successfully');
+          }
+        }
+      });
+      setLinkConnection(link);
+      openMeshIntegration(link);
+    }
+  }, [linkToken]);
+
+  const fetchLinkToken = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch('/api/linkTokenCall');
+      if (!response.ok) {
+        throw new Error('Failed to fetch link token');
+      }
+      const result = await response.json();
+      setLinkToken(result.linkToken);
+    } catch (error) {
+      console.error('Error fetching link token:', error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openMeshIntegration = async (link) => {
+    if (!linkToken) {
+      setError('Link token not fetched yet.');
+      return;
+    }
+
+    try {
+      await link.openLink(linkToken, {
+        onSuccess: () => {
+          console.log('Link opened successfully in popup');
+        },
+        onError: (error) => {
+          console.error('Error opening link in popup:', error);
+          alert('Failed to open link. Please try again.');
+        }
+      });
+    } catch (error) {
+      console.error('Error opening link in popup:', error);
+      alert('Failed to open link. Please try again.');
+    }
+  };
+
+  return (
+    <div>
+      <h1>Mesh Popup Page</h1>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          {error && <p>Error: {error}</p>}
+          {!loading && !error && <p>Opening Mesh integration...</p>}
+        </>
+      )}
+    </div>
+  );
+};
+
+export default MeshPopup;
