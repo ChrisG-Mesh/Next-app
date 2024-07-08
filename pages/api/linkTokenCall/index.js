@@ -1,9 +1,11 @@
+// pages/api/linkTokenCall.js
+
 import Cors from 'cors';
 import initMiddleware from '../../../lib/init-middleware';
 
 const cors = initMiddleware(
   Cors({
-    methods: ['POST', 'OPTIONS', 'GET'], 
+    methods: ['POST', 'OPTIONS', 'GET'],
     origin: '*',
   })
 );
@@ -11,8 +13,32 @@ const cors = initMiddleware(
 async function handler(req, res) {
   await cors(req, res);
 
+  const { broker } = req.query;
+
+  let integrationId;
+
+  if (broker) {
+    switch (broker) {
+      case 'Coinbase':
+        integrationId = '47624467-e52e-4938-a41a-7926b6c27acf';
+        break;
+      case 'Binance':
+        integrationId = '9226e5c2-ebc3-4fdd-94f6-ed52cdce1420';
+        break;
+      case 'Robinhood':
+        integrationId = '6e192ebb-a073-4055-bbd7-d644539c9a20';
+        break;
+      default:
+        return res.status(400).json({ error: 'Invalid broker specified' });
+    }
+  }
+
   try {
-    console.log("in the api call for linktoken");
+    const requestBody = {
+      userId: process.env.MESH_USERID,
+      ...(integrationId && { integrationId }), // Conditionally add the integrationId
+    };
+
     const response = await fetch(`https://integration-api.meshconnect.com/api/v1/linktoken`, {
       method: 'POST',
       headers: {
@@ -21,9 +47,7 @@ async function handler(req, res) {
         'x-client-id': process.env.MESH_CLIENTID,
         'x-client-secret': process.env.MESH_APIKEY,
       },
-      body: JSON.stringify({
-        userId: process.env.MESH_USERID,
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {

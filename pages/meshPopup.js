@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createLink } from '@meshconnect/web-link-sdk';
 import { useSocketIO } from '../context/WebSocketContext';
-import './MeshPopup.css'; // Example CSS file for styling
+import './MeshPopup.css';
 
 const MeshPopup = () => {
   const [linkConnection, setLinkConnection] = useState(null);
@@ -50,8 +50,12 @@ const MeshPopup = () => {
   const fetchLinkToken = async () => {
     setLoading(true);
     setError(null);
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const broker = urlParams.get('broker');
+
     try {
-      const response = await fetch('/api/linkTokenCall');
+      const response = await fetch(`/api/linkTokenCall${broker ? `?broker=${broker}` : ''}`);
       if (!response.ok) {
         throw new Error('Failed to fetch link token');
       }
