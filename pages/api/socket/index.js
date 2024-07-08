@@ -30,7 +30,7 @@ const ioHandler = async (req, res) => {
       socket.on('message', (message) => {
         console.log('Received message:', message);
         // Echo back the received message to all clients
-        io.emit('message', `Echo from server: ${message}`);
+        io.emit('message', `Event: ${message}`);
       });
 
       socket.on('disconnect', () => {

@@ -89,7 +89,6 @@ const MeshPopup = () => {
 
   return (
     <div>
-      <h1>Mesh Popup Page</h1>
       {loading ? (
         <p>Loading...</p>
       ) : (
