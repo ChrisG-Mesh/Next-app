@@ -18,7 +18,7 @@ async function handler(req, res) {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'x-client-id': "b7007f87-c050-40cf-7777-08dc6f959a47",
+        'x-client-id': process.env.CLIENT_ID,
         'x-client-secret': process.env.MESH_APIKEY,
       },
       body: JSON.stringify({
