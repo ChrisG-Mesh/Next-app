@@ -16,7 +16,7 @@ const MeshPopup = () => {
   useEffect(() => {
     if (linkToken) {
       const link = createLink({
-        clientId: "b7007f87-c050-40cf-7777-08dc6f959a47", // hard coded temporarily
+        clientId: process.env.MESH_CLIENTID,
         onIntegrationConnected: (data) => {
           console.log('Integration connected:', data);
         },
