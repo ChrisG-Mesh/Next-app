@@ -14,8 +14,8 @@ Make sure you have Node.js and npm installed on your development machine. You ca
 1. **Clone the repository:**
 
     ```sh
-    git clone https://github.com/your-username/your-repo-name.git
-    cd your-repo-name
+    git clone https://github.com/your-username/server-side-google-ext.git
+    cd server-side-google-ext
     ```
 
 2. **Install NPM packages:**
