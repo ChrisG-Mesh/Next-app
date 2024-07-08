@@ -29,7 +29,6 @@ const ioHandler = async (req, res) => {
 
       socket.on('message', (message) => {
         console.log('Received message:', message);
-        // Echo back the received message to all clients
         io.emit('message', `Event: ${message}`);
       });
 
@@ -37,8 +36,6 @@ const ioHandler = async (req, res) => {
         console.log('Client disconnected');
       });
     });
-
-    // Attach io instance to server
     res.socket.server.io = io;
   } else {
     console.log('Socket.IO server already initialized.');
@@ -48,7 +45,7 @@ const ioHandler = async (req, res) => {
 
 export const config = {
   api: {
-    bodyParser: false, // Disable body parsing (required for WebSocket)
+    bodyParser: false,
   },
 };
 

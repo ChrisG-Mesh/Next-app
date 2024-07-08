@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createLink } from '@meshconnect/web-link-sdk';
 import { useSocketIO } from '../context/WebSocketContext';
+import './MeshPopup.css'; // Example CSS file for styling
 
 const MeshPopup = () => {
   const [linkConnection, setLinkConnection] = useState(null);
@@ -23,7 +24,6 @@ const MeshPopup = () => {
         onEvent: (event) => {
           console.info('Mesh EVENT', event);
           if (socket && socket.connected) {
-            console.log("About to send Socket message")
             sendMessage(JSON.stringify(event));
           } else {
             console.error('Socket.IO is not connected. Cannot send event.');
@@ -58,8 +58,7 @@ const MeshPopup = () => {
       const result = await response.json();
       setLinkToken(result.linkToken);
     } catch (error) {
-      console.error('Error fetching link token:', error);
-      setError(error.message);
+      setError('Failed to fetch link token. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -77,25 +76,26 @@ const MeshPopup = () => {
           console.log('Link opened successfully in popup');
         },
         onError: (error) => {
-          console.error('Error opening link in popup:', error);
-          alert('Failed to open link. Please try again.');
+          setError('Failed to open link. Please try again.');
         }
       });
     } catch (error) {
-      console.error('Error opening link in popup:', error);
-      alert('Failed to open link. Please try again.');
+      setError('Failed to open link. Please try again.');
     }
   };
 
   return (
-    <div>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <>
-          {error && <p>Error: {error}</p>}
-          {!loading && !error && <p>Opening Mesh integration...</p>}
-        </>
+    <div className="mesh-popup">
+      {loading && <div className="loader"></div>}
+      {!loading && error && (
+        <div className="error-message">
+          <p>Error: {error}</p>
+        </div>
+      )}
+      {!loading && !error && (
+        <div className="success-message">
+          <p>Re-open Mesh through the Extension and close this window</p>
+        </div>
       )}
     </div>
   );
