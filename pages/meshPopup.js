@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { createLink } from '@meshconnect/web-link-sdk';
+import { useSocketIO } from '../context/WebSocketContext';
 
 const MeshPopup = () => {
   const [linkConnection, setLinkConnection] = useState(null);
   const [linkToken, setLinkToken] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const { socket, sendMessage } = useSocketIO();
 
   useEffect(() => {
     fetchLinkToken();
@@ -14,12 +16,19 @@ const MeshPopup = () => {
   useEffect(() => {
     if (linkToken) {
       const link = createLink({
-        clientId: "b7007f87-c050-40cf-7777-08dc6f959a47", //hard coded temporarily
+        clientId: "b7007f87-c050-40cf-7777-08dc6f959a47", // hard coded temporarily
         onIntegrationConnected: (data) => {
           console.log('Integration connected:', data);
         },
         onEvent: (event) => {
           console.info('Mesh EVENT', event);
+          if (socket && socket.connected) {
+            console.log("About to send Socket message")
+            sendMessage(JSON.stringify(event));
+          } else {
+            console.error('Socket.IO is not connected. Cannot send event.');
+          }
+
           if (event.type === 'close') {
             console.log('Close event occurred in Mesh modal');
             window.close();
@@ -36,7 +45,7 @@ const MeshPopup = () => {
       setLinkConnection(link);
       openMeshIntegration(link);
     }
-  }, [linkToken]);
+  }, [linkToken, socket, sendMessage]);
 
   const fetchLinkToken = async () => {
     setLoading(true);
