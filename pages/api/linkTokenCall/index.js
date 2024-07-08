@@ -39,7 +39,7 @@ async function handler(req, res) {
       ...(integrationId && { integrationId }), // Conditionally add the integrationId
     };
 
-    const response = await fetch(`https://integration-api.meshconnect.com/api/v1/linktoken`, {
+    const response = await fetch(`${MESH_URL}/api/v1/linktoken`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
