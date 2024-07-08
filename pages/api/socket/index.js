@@ -1,27 +1,44 @@
 import { Server } from 'socket.io';
+import Cors from 'cors';
+import initMiddleware from '../../../lib/init-middleware';
 
-const ioHandler = (req, res) => {
+// Initialize CORS middleware using Next.js custom middleware approach
+const cors = initMiddleware(
+  Cors({
+    methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
+    origin: '*',
+  })
+);
+
+const ioHandler = async (req, res) => {
+  await cors(req, res);
+
   if (!res.socket.server.io) {
     console.log('Initializing Socket.IO server...');
-    const io = new Server(res.socket.server);
+
+    // Create socket.io server instance attached to HTTP server
+    const io = new Server(res.socket.server, {
+      cors: {
+        origin: '*',
+      },
+    });
 
     io.on('connection', (socket) => {
       console.log('Client connected');
-
-      const interval = setInterval(() => {
-        socket.emit('event', { type: 'event', data: 'Hello from middleware app!' });
-      }, 5000);
+      socket.emit('event', { type: 'event', data: 'hello from IO' });
 
       socket.on('message', (message) => {
-        console.log('Received:', message);
+        console.log('Received message:', message);
+        // Echo back the received message to all clients
+        io.emit('message', `Echo from server: ${message}`);
       });
 
       socket.on('disconnect', () => {
-        clearInterval(interval);
         console.log('Client disconnected');
       });
     });
 
+    // Attach io instance to server
     res.socket.server.io = io;
   } else {
     console.log('Socket.IO server already initialized.');
