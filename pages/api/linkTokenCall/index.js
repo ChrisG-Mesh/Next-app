@@ -36,7 +36,7 @@ async function handler(req, res) {
   try {
     const requestBody = {
       userId: process.env.MESH_USERID,
-      ...(integrationId && { integrationId }), // Conditionally add the integrationId
+      ...(integrationId && { integrationId }), 
     };
 
     const response = await fetch(`${process.env.MESH_URL}/api/v1/linktoken`, {
