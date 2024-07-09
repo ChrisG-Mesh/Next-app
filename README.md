@@ -28,7 +28,7 @@ Make sure you have Node.js and npm installed on your development machine. You ca
 
 Create a `.env.local` file in the root directory of your project. This file should contain all the necessary environment variables. Here’s an example of what your `.env.local` file might look like:
 
-    ```env
+    ```
     # Example environment variables
     MESH_CLIENTID=your-client-id
     MESH_APIKEY=your-api-key
